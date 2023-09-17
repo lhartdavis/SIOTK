@@ -1,0 +1,47 @@
+Please ignore all previous instructions.
+You are a senior software developer and you have more than a decade of experience in building web applications. I want you to code me a python flask app that will be my general flashcard app. This app's general goal is to help me learn and retain information on the long term. When reviewing a card list, the app presents the question and then waits for a keypress or click (any key or mouse button or touch) before presenting the answer. A keypress, click or touch will then lead to the next card's question, then answer etc...
+
+Here are the requirements :
+
+Functionalities and back-end information :
+
+Each card consists of a question and an answer.
+A question can be of type "text", "image" or "audio".
+An answer can (independently of the question) be of type "text", "image" or "audio".
+
+Please use a json file to store the question and answer pairs.
+if the type is text, then the content is simply the text to be displayed.
+if the type is image or audio, then the content is a link to the image or audio file in a resources folder.
+
+Cards also have an importance parameter (between 0 and 1) which represent the probability that the card is selected. A card with importance 0.2 will have four times less chances of being selected than a card with probability 0.8. Default importance is 0.5
+
+Cards are regrouped in "decks". Each deck has a name, description and its own importance parameter.
+
+In the app I need to be able to :
+-create/delete/edit a deck
+-change the importance of a deck with a slider
+-select one or several decks to be reviewed by selecting them (checkbox) them and pressing on a big button on the bottom of the screen. If the button is "exhaustive review" in that case all the cards of the deck are selected, shuffled and reviewed independently of their importance and of the importance of the deck that they belong to. If the clicked button is "random review" then the review is infinite with each new reviewed card being randomly selected proportionally to the product of deck importance and card importance.
+-on a given deck's page, I want to be able to create/delete/edit a card. I also want to be able to change a card's importance with a slider
+-while creating or updating a card, if the question or the answer is chosen to be of type "image" or "audio", there needs to be a file upload button which then places the file in the ressources folder and places the link to that file in the "content" field.
+
+
+Pages and structure :
+
+
+The root "/" route leads to an infinite card review where all cards from all decks can be chosen as the next card proportionally to the deck importance times the card importance. 
+
+the "/decks" route presents a list of all decks with basic info such as the number of cards, the date of creation, the number of times it has been reviewed, the importance number (with a slider next to it to change importance), a checkbox and a few buttons : random review, exhaustive review, edit, delete. If the checkbox of at least one deck is checked, then the big review buttons (random review and exhaustive review) appear on the bottom of the screen
+
+-each deck has its own page presenting a card list. The deck's name, description and importance can all be edited. There are large "exhaustive review" and "detailed review" buttons. Cards can be added, deleted and edited on this page.
+
+Style and appearance :
+
+In card review mode, the whole page is dedicated to displaying the current card. Texts are centered and are displayed in large font size (making sure that the full text is being displayed). Images are sized to fit to the full page height or width (depending on their aspect ratio and the page's aspect ratio).
+If the card review is finite, a discrete count number on bottom right the tracks the number of cards left to review
+
+I want the app to have a dark theme with modern fonts. Don't hesitate to add a few animations such as fast fade-ins or movements on hover so that it looks neat and powerful. Be creative.
+
+If you need to create sample content, you can create a deck on European capitals and a deck on dates of famous historical events.
+
+Please comment your code so that I can come back to it later and add functionalities (I'm a beginner in web app development)
+Please feel free to ask questions if something is unclear or provide suggestions.

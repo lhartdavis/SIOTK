@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <style>
+        /* Add your custom CSS here */
+
+        *{
+            color : #fff;
+            font-family: myriad, klik, ubuntu, georgia, arial, serif;
+            text-align: center;
+        }
+
+        body{
+            background-color: #111;
+        }
+
+        input{
+            background-color: #333;
+        }
+
+        .card-review{
+            border : none;
+            font-size : 4em;
+            margin : 5%;
+        }
+
+        footer{
+            position : fixed;
+            bottom: 10px;
+            right: 10px;
+            text-decoration: none;
+            color:#eee;
+        }
+
+        .card-edit, .deck{
+
+            background-color: #444;
+            display: inline-block;
+            float: left;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        img{
+            max-height: 50wh;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <a href="/">Review</a>
+        <a href="/decks">Decks</a>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Add your custom JavaScript here
+    </script>
+</body>
+</html>

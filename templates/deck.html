@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ deck.name }}</h1>
+    <h2>Cards : {{ deck.cards | count }}</h2>
+    <a href="{{ url_for('fullreview', deck_name=deck.name) }}">Full review</a>
+    <form action="/decks/{{ deck.name }}" method="post">
+        <input type="hidden" name="action" value="edit_deck">
+        <label>Description: <input type="text" name="description" value="{{ deck.description }}"></label>
+        <br>
+        <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ deck.importance }}"></label>
+        <input type="submit" value="Save changes">
+    </form>
+
+    <h2>Add a new card</h2>
+    <form action="/decks/{{ deck.name }}" method="post">
+        <input type="hidden" name="action" value="add_card">
+        <label>Question: <input style = "width:30vw" type="text" name="question"></label>
+        <br>
+        <label>Answer: <input style = "width:30vw" type="text" name="answer"></label>
+        <br>
+        <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="0.5"></label>
+        <input type="submit" value="Add card">
+    </form>
+
+    <div class="card-list">
+        {% for card in deck.cards %}
+            <div class="card-edit">
+                <h4>{{ card.question.content }}</h4>
+                <form action="/decks/{{ deck.name }}" method="post">
+                    <input type="hidden" name="action" value="edit_card">
+                    <input type="hidden" name="id" value="{{loop.index0}}">
+                    <input type="hidden" name="question" value="{{ card.question.content }}">
+                    <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ card.importance }}"></label>
+                    <br>
+                    <label>Answer: <input type="text" name="answer" value="{{ card.answer.content }}"></label>
+                    <input type="submit" value="Save changes">
+                </form>
+                <form action="/decks/{{ deck.name }}" method="post">
+                    <input type="hidden" name="action" value="delete_card">
+                    <input type="hidden" name="question" value="{{ card.question.content }}">
+                    <input type="submit" value="Delete card">
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+    
+{% endblock %}
