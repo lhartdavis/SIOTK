@@ -54,4 +54,4 @@
 { "question": { "type": "image","content": "africa_Cape_Verde_(orthographic_projection).svg"},"answer": {"type": "text","content": "Cape Verde" }, "importance": 0.5},
 { "question": { "type": "image","content": "africa_Djibouti_(orthographic_projection).svg"},"answer": {"type": "text","content": "Djibouti" }, "importance": 0.5},
 { "question": { "type": "image","content": "africa_Liberia_(orthographic_projection).svg"},"answer": {"type": "text","content": "Liberia" }, "importance": 0.5},
-{ "question": { "type": "image","content": "africa_Sierra_Leone_(orthographic_projection).svg"},"answer": {"type": "text","content": "Sierra Leone" }, "importance": 0.5},
+{ "question": { "type": "image","content": "africa_Sierra_Leone_(orthographic_projection).svg"},"answer": {"type": "text","content": "Sierra Leone" }, "importance": 0.5}
