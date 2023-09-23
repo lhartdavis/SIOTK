@@ -6,6 +6,7 @@ Python 3+ and Flask need to be installed
 
 # Next features
 - add image upload 
+- add reversible cards
 - move data storage from json to sqlite database
 - can turn on / off deck or card (on top of importance)
 - add tags to cards
@@ -23,6 +24,8 @@ Python 3+ and Flask need to be installed
 - anki-like features
 - better UI on phone
 - database backup and download all ressources as zip
+- Card transfer from one deck to another deck
+- Card search engine / discovery 
 
 # Content to add
 - nutrition + composition 100 aliments les plus fréquents
