@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card-review" id="card-review">
+        <div class="card"><!-- Display question content based on its type -->
+            {% if current_card.question.type == 'text' %}
+                <h3>{{ current_card.question.content }}</h3>
+            {% elif current_card.question.type == 'image' %}
+                <img src="{{ url_for('SIOTK.static', filename='resources/' + current_card.question.content) }}" alt="Question image">
+            {% elif current_card.question.type == 'audio' %}
+                <audio controls>
+                    <source src="{{ url_for('SIOTK.static', filename='resources/' + current_card.question.content) }}" type="audio/mpeg">
+                </audio>
+            {% endif %}
+            <div class="answer" id="answer" style="display: none;">
+                <!-- Display answer content based on its type -->
+                {% if current_card.answer.type == 'text' %}
+                    <p>{{ current_card.answer.content }}</p>
+                {% elif current_card.answer.type == 'image' %}
+                    <img src="{{ url_for('SIOTK.static', filename='resources/' + current_card.answer.content) }}" alt="Answer image">
+                {% elif current_card.answer.type == 'audio' %}
+                    <audio controls>
+                        <source src="{{ url_for('SIOTK.static', filename='resources/' + current_card.answer.content) }}" type="audio/mpeg">
+                    </audio>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var answerVisible = false;
+
+        function showAnswer() {
+            if (!answerVisible) {
+                document.getElementById('answer').style.display = 'block';
+                answerVisible = true;
+            } else {
+                location.reload();
+            }
+        }
+
+        document.getElementById('card-review').addEventListener('click', showAnswer);
+        document.getElementById('card-review').addEventListener('touchstart', showAnswer);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                showAnswer();
+            }
+        });
+    </script>
+{% endblock %}

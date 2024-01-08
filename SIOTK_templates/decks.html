@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Decks</h1>
+
+    <h2>Create a new deck</h2>
+    <form action="/decks" method="post">
+        <input type="hidden" name="action" value="create">
+        <label>Name: <input type="text" name="name"></label>
+        <br>
+        <label>Description: <input type="text" name="description"></label>
+        <br>
+        <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="0.5"></label>
+        <br>
+        <input type="submit" value="Create deck">
+    </form>
+
+    <div class="deck-list">
+        {% for deck in decks %}
+            <div class="deck">
+                <h3>{{ deck.name }} ( {{ deck.cards | length }} )</h3>
+                <p>{{ deck.description }}</p>
+                <form action="/decks" method="post">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="name" value="{{ deck.name }}">
+                    <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ deck.importance }}"></label>
+                    <br>
+                    <label>Description: <input type="text" name="description" value="{{ deck.description }}"></label>
+                    <input type="submit" value="Save changes">
+                </form>
+                <form action="/decks" method="post">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="name" value="{{ deck.name }}">
+                    <input type="submit" value="Delete deck">
+                </form>
+                <a href="{{ url_for('SIOTK.deck', deck_name=deck.name) }}">Open deck</a>
+                <a href="{{ url_for('SIOTK.fullreview', deck_name=deck.name) }}">Full review</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    
+{% endblock %}

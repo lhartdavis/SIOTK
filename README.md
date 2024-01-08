@@ -10,6 +10,8 @@ Python 3+ and Flask need to be installed
 - move data storage from json to sqlite database
 - can turn on / off deck or card (on top of importance)
 - add tags to cards
+- cards can be selected for deletion or mk new subcategory
+- Vector view of cards in order to 
 - normalize card probabilities on deck probability : deck with many cards shoudnt be overrepresented
 - default stack deck with add card page 
 - previous card
@@ -26,6 +28,12 @@ Python 3+ and Flask need to be installed
 - database backup and download all ressources as zip
 - Card transfer from one deck to another deck
 - Card search engine / discovery 
+
+## Languages
+--> Read text and translate words not in list, words of frequency over ...
+
+## ChatPDF
+--> can upload pdfs, text files etc... and have summaries, mk flashcards with key questions, extract mental models, ...
 
 # Content to add
 - nutrition + composition 100 aliments les plus fréquents
