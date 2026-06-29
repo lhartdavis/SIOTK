@@ -12,9 +12,10 @@ app.config['UPLOAD_FOLDER'] = 'resources'
 
 # useful functions
 def type_form_filepath(filepath):
-    if filepath[-4:] in [".jpg", ".jpeg", ".png", ".svg"]:
+    extension = os.path.splitext(filepath)[1].lower()
+    if extension in [".jpg", ".jpeg", ".png", ".svg"]:
         return "image"
-    if filepath[-4:] in [".wav", ".mp3"]:
+    if extension in [".wav", ".mp3"]:
         return "audio"
     return "text"
 
@@ -130,9 +131,9 @@ def deck(deck_name):
         elif request.form.get('action') == 'edit_card':
             for i, card in enumerate(decks[deck_index]['cards']):
                 if i == int(request.form.get('id')):
-                    card['question']['type'] = type_form_filepath(request.form.get('question')),
+                    card['question']['type'] = type_form_filepath(request.form.get('question'))
                     card['question']['content'] = request.form.get('question')
-                    card['answer']['type'] = type_form_filepath(request.form.get('answer')),
+                    card['answer']['type'] = type_form_filepath(request.form.get('answer'))
                     card['answer']['content'] = request.form.get('answer')
                     card['importance'] = float(request.form.get('importance'))
 
