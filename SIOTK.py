@@ -1,4 +1,6 @@
 from flask import Blueprint, Flask, render_template, request, redirect, url_for, session
+import csv
+import io
 import json
 import os
 import random
@@ -44,6 +46,61 @@ def save_decks(decks):
     file_path = os.path.join(current_dir, "decks.json")
     with open(file_path, "w") as f:
         json.dump({"decks": decks}, f)
+
+
+def make_card(question, answer):
+    return {
+        "question": {
+            "type": type_form_filepath(question),
+            "content": question,
+        },
+        "answer": {
+            "type": type_form_filepath(answer),
+            "content": answer,
+        },
+        "importance": 0.5,
+    }
+
+
+def cards_from_csv_upload(file_storage, reversible=False):
+    if not file_storage or not file_storage.filename:
+        return [], "Choose a CSV file before importing."
+
+    try:
+        stream = io.TextIOWrapper(file_storage.stream, encoding="utf-8-sig", newline="")
+        rows = csv.reader(stream)
+        cards = []
+
+        for row_number, row in enumerate(rows, start=1):
+            if not row or all(not cell.strip() for cell in row):
+                continue
+
+            if row_number == 1 and len(row) >= 2:
+                first_cell = row[0].strip().lower()
+                second_cell = row[1].strip().lower()
+                if first_cell == "question" and second_cell == "answer":
+                    continue
+
+            if len(row) < 2:
+                return [], f"Row {row_number} must have question and answer columns."
+
+            question = row[0].strip()
+            answer = row[1].strip()
+            if not question or not answer:
+                return [], f"Row {row_number} has an empty question or answer."
+
+            cards.append(make_card(question, answer))
+            if reversible:
+                cards.append(make_card(answer, question))
+    except UnicodeDecodeError:
+        return [], "The CSV file must be UTF-8 encoded."
+    except csv.Error as error:
+        return [], f"Could not read CSV: {error}"
+
+    if not cards:
+        return [], "No cards found in the CSV file."
+
+    return cards, None
 
 
 def is_allowed_ip():
@@ -214,6 +271,8 @@ def deck(deck_name):
 
     decks = load_decks()
     deck_index = None
+    import_feedback = None
+    import_feedback_kind = None
 
     for i, deck in enumerate(decks):
         if deck["name"] == deck_name:
@@ -258,11 +317,27 @@ def deck(deck_name):
             decks[deck_index]["description"] = request.form.get("description")
             decks[deck_index]["importance"] = float(request.form.get("importance"))
 
-        save_decks(decks)
+        elif request.form.get("action") == "import_csv":
+            reversible = request.form.get("reversible") == "on"
+            cards, import_error = cards_from_csv_upload(
+                request.files.get("csv_file"), reversible=reversible
+            )
+            if import_error:
+                import_feedback = import_error
+                import_feedback_kind = "error"
+            else:
+                decks[deck_index]["cards"].extend(cards)
+                import_feedback = f"Imported {len(cards)} cards."
+                import_feedback_kind = "success"
+
+        if import_feedback_kind != "error":
+            save_decks(decks)
 
     return render_template(
         "deck.html",
         deck=decks[deck_index],
+        import_feedback=import_feedback,
+        import_feedback_kind=import_feedback_kind,
         show_logout=session.get("management_authenticated") is True,
     )
 
