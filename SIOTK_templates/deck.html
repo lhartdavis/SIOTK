@@ -8,7 +8,12 @@
                 <h1>{{ deck.name }}</h1>
                 <p class="muted">{{ deck.cards | count }} cards</p>
             </div>
-            <a class="btn btn-secondary" href="{{ url_for('SIOTK.fullreview', deck_name=deck.name) }}">Full review</a>
+            <div class="action-row">
+                <a class="btn btn-secondary" href="{{ url_for('SIOTK.fullreview', deck_name=deck.name) }}">Full review</a>
+                {% if show_logout %}
+                    <a class="btn btn-ghost" href="{{ url_for('SIOTK.logout') }}">Logout</a>
+                {% endif %}
+            </div>
         </header>
 
         <section class="management-panel">

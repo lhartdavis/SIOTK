@@ -15,6 +15,10 @@ SIOTK = Blueprint(
     "SIOTK", __name__, template_folder="SIOTK_templates", static_folder="SIOTK_static"
 )
 
+MANAGEMENT_PASSWORD = "1234"
+PASSWORD_COOLDOWN_SECONDS = 10
+ALLOWED_IPV4S = {"REPLACE_WITH_MY_IP"}
+
 
 # useful functions
 def type_form_filepath(filepath):
@@ -40,6 +44,42 @@ def save_decks(decks):
     file_path = os.path.join(current_dir, "decks.json")
     with open(file_path, "w") as f:
         json.dump({"decks": decks}, f)
+
+
+def is_allowed_ip():
+    return request.remote_addr in ALLOWED_IPV4S
+
+
+def is_management_authenticated():
+    return is_allowed_ip() or session.get("management_authenticated") is True
+
+
+def is_safe_next_url(next_url):
+    return bool(next_url) and next_url.startswith("/") and not next_url.startswith("//")
+
+
+def get_login_next_url():
+    next_url = request.values.get("next") or url_for("SIOTK.decks")
+    if not is_safe_next_url(next_url):
+        return url_for("SIOTK.decks")
+    return next_url
+
+
+def get_cooldown_remaining():
+    cooldown_until = session.get("password_cooldown_until", 0)
+    remaining = cooldown_until - time.time()
+    if remaining <= 0:
+        session.pop("password_cooldown_until", None)
+        return 0
+    return int(remaining) + 1
+
+
+def require_management_auth():
+    if is_management_authenticated():
+        return None
+
+    next_url = request.full_path if request.query_string else request.path
+    return redirect(url_for("SIOTK.login", next=next_url))
 
 
 # Routes and functions here
@@ -91,8 +131,49 @@ def fullreview(deck_name):
     return redirect(url_for("fullreview", deck_name=random.choice(decks)["name"]))
 
 
+@SIOTK.route("/login", methods=["GET", "POST"])
+def login():
+    next_url = get_login_next_url()
+    error = None
+
+    if is_allowed_ip():
+        return redirect(next_url)
+
+    cooldown_remaining = get_cooldown_remaining()
+
+    if request.method == "POST":
+        if cooldown_remaining:
+            error = "Too many attempts."
+        elif request.form.get("password") == MANAGEMENT_PASSWORD:
+            session["management_authenticated"] = True
+            session.pop("password_cooldown_until", None)
+            return redirect(next_url)
+        else:
+            session["password_cooldown_until"] = time.time() + PASSWORD_COOLDOWN_SECONDS
+            cooldown_remaining = PASSWORD_COOLDOWN_SECONDS
+            error = "Incorrect password."
+
+    return render_template(
+        "login.html",
+        cooldown_remaining=cooldown_remaining,
+        error=error,
+        next_url=next_url,
+    )
+
+
+@SIOTK.route("/logout")
+def logout():
+    session.pop("management_authenticated", None)
+    session.pop("password_cooldown_until", None)
+    return redirect(url_for("SIOTK.infinite_review"))
+
+
 @SIOTK.route("/decks", methods=["GET", "POST"])
 def decks():
+    auth_redirect = require_management_auth()
+    if auth_redirect:
+        return auth_redirect
+
     if request.method == "POST":
         decks = load_decks()
 
@@ -118,11 +199,19 @@ def decks():
         save_decks(decks)
 
     decks = load_decks()
-    return render_template("decks.html", decks=decks)
+    return render_template(
+        "decks.html",
+        decks=decks,
+        show_logout=session.get("management_authenticated") is True,
+    )
 
 
 @SIOTK.route("/decks/<deck_name>", methods=["GET", "POST"])
 def deck(deck_name):
+    auth_redirect = require_management_auth()
+    if auth_redirect:
+        return auth_redirect
+
     decks = load_decks()
     deck_index = None
 
@@ -171,7 +260,11 @@ def deck(deck_name):
 
         save_decks(decks)
 
-    return render_template("deck.html", deck=decks[deck_index])
+    return render_template(
+        "deck.html",
+        deck=decks[deck_index],
+        show_logout=session.get("management_authenticated") is True,
+    )
 
 
 if __name__ == "__main__":

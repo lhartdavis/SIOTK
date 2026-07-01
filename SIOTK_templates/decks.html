@@ -8,6 +8,9 @@
                 <h1>Decks</h1>
                 <p class="muted">{{ decks | length }} decks ready for review</p>
             </div>
+            {% if show_logout %}
+                <a class="btn btn-ghost" href="{{ url_for('SIOTK.logout') }}">Logout</a>
+            {% endif %}
         </header>
 
         <section class="management-panel">

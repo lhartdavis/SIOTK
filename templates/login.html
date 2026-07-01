@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <main class="management-shell">
+        <section class="management-panel auth-panel">
+            <p class="management-kicker">Protected</p>
+            <h1>Deck access</h1>
+            <p class="muted">Enter the management password to continue.</p>
+
+            <form class="form-stack" method="post">
+                <input type="hidden" name="next" value="{{ next_url }}">
+                <label class="field">
+                    <span>Password</span>
+                    <input type="password" name="password" autofocus autocomplete="current-password">
+                </label>
+
+                {% if error %}
+                    <p class="auth-error">{{ error }}</p>
+                {% endif %}
+                {% if cooldown_remaining %}
+                    <p class="muted">Try again in {{ cooldown_remaining }} seconds.</p>
+                {% endif %}
+
+                <div class="action-row">
+                    <input class="btn btn-primary" type="submit" value="Unlock">
+                    <a class="btn btn-ghost" href="{{ url_for('infinite_review') }}">Back to review</a>
+                </div>
+            </form>
+        </section>
+    </main>
+{% endblock %}
