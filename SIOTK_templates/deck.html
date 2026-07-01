@@ -1,48 +1,97 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{{ deck.name }}</h1>
-    <h2>Cards : {{ deck.cards | count }}</h2>
-    <a href="{{ url_for('SIOTK.fullreview', deck_name=deck.name) }}">Full review</a>
-    <form action="/decks/{{ deck.name }}" method="post">
-        <input type="hidden" name="action" value="edit_deck">
-        <label>Description: <input type="text" name="description" value="{{ deck.description }}"></label>
-        <br>
-        <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ deck.importance }}"></label>
-        <input type="submit" value="Save changes">
-    </form>
+    <main class="management-shell">
+        <header class="management-header">
+            <div>
+                <p class="management-kicker">Deck</p>
+                <h1>{{ deck.name }}</h1>
+                <p class="muted">{{ deck.cards | count }} cards</p>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('SIOTK.fullreview', deck_name=deck.name) }}">Full review</a>
+        </header>
 
-    <h2>Add a new card</h2>
-    <form action="/decks/{{ deck.name }}" method="post">
-        <input type="hidden" name="action" value="add_card">
-        <label>Question: <input style = "width:30vw" type="text" name="question"></label>
-        <br>
-        <label>Answer: <input style = "width:30vw" type="text" name="answer"></label>
-        <br>
-        <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="0.5"></label>
-        <input type="submit" value="Add card">
-    </form>
+        <section class="management-panel">
+            <div class="section-heading">
+                <h2>Deck settings</h2>
+            </div>
+            <form class="form-stack" action="/decks/{{ deck.name }}" method="post">
+                <input type="hidden" name="action" value="edit_deck">
+                <label class="field">
+                    <span>Description</span>
+                    <input type="text" name="description" value="{{ deck.description }}">
+                </label>
+                <label class="field">
+                    <span>Importance</span>
+                    <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ deck.importance }}">
+                </label>
+                <div class="action-row">
+                    <input class="btn btn-primary" type="submit" value="Save changes">
+                </div>
+            </form>
+        </section>
 
-    <div class="card-list">
+        <section class="management-panel">
+            <div class="section-heading">
+                <h2>Add card</h2>
+            </div>
+            <form class="form-stack" action="/decks/{{ deck.name }}" method="post">
+                <input type="hidden" name="action" value="add_card">
+                <div class="form-grid">
+                    <label class="field">
+                        <span>Question</span>
+                        <input type="text" name="question">
+                    </label>
+                    <label class="field">
+                        <span>Answer</span>
+                        <input type="text" name="answer">
+                    </label>
+                </div>
+                <label class="field">
+                    <span>Importance</span>
+                    <input type="range" name="importance" min="0" max="1" step="0.1" value="0.5">
+                </label>
+                <div class="action-row">
+                    <input class="btn btn-primary" type="submit" value="Add card">
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <h2>Cards</h2>
+                <span class="badge">{{ deck.cards | count }} total</span>
+            </div>
+            <div class="management-grid">
         {% for card in deck.cards %}
-            <div class="card-edit">
-                <h4>{{ card.question.content }}</h4>
-                <form action="/decks/{{ deck.name }}" method="post">
+                <article class="management-card card-edit">
+                    <h3 class="card-title">{{ card.question.content }}</h3>
+                    <form class="form-stack" action="/decks/{{ deck.name }}" method="post">
                     <input type="hidden" name="action" value="edit_card">
                     <input type="hidden" name="id" value="{{loop.index0}}">
                     <input type="hidden" name="question" value="{{ card.question.content }}">
-                    <label>Importance: <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ card.importance }}"></label>
-                    <br>
-                    <label>Answer: <input type="text" name="answer" value="{{ card.answer.content }}"></label>
-                    <input type="submit" value="Save changes">
-                </form>
-                <form action="/decks/{{ deck.name }}" method="post">
-                    <input type="hidden" name="action" value="delete_card">
-                    <input type="hidden" name="question" value="{{ card.question.content }}">
-                    <input type="submit" value="Delete card">
-                </form>
-            </div>
+                        <label class="field">
+                            <span>Importance</span>
+                            <input type="range" name="importance" min="0" max="1" step="0.1" value="{{ card.importance }}">
+                        </label>
+                        <label class="field">
+                            <span>Answer</span>
+                            <input type="text" name="answer" value="{{ card.answer.content }}">
+                        </label>
+                        <div class="action-row">
+                            <input class="btn btn-primary" type="submit" value="Save changes">
+                        </div>
+                    </form>
+                    <form class="inline-form" action="/decks/{{ deck.name }}" method="post">
+                        <input type="hidden" name="action" value="delete_card">
+                        <input type="hidden" name="question" value="{{ card.question.content }}">
+                        <input class="btn btn-destructive" type="submit" value="Delete card">
+                    </form>
+                </article>
+        {% else %}
+                <p class="empty-state">No cards yet.</p>
         {% endfor %}
-    </div>
-    
+            </div>
+        </section>
+    </main>
 {% endblock %}
