@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, current_app
 import csv
 import io
 import json
@@ -56,7 +56,19 @@ def cards_from_csv_upload(file_storage, reversible=False):
         return [], "Choose a CSV file before importing."
 
     try:
-        stream = io.TextIOWrapper(file_storage.stream, encoding="utf-8-sig", newline="")
+        csv_bytes = file_storage.read()
+        if isinstance(csv_bytes, str):
+            csv_text = csv_bytes
+        else:
+            csv_text = csv_bytes.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return [], "The CSV file must be UTF-8 encoded."
+    except (OSError, ValueError):
+        current_app.logger.exception("Could not read uploaded CSV file.")
+        return [], "Could not read the uploaded CSV file."
+
+    try:
+        stream = io.StringIO(csv_text, newline="")
         rows = csv.reader(stream)
         cards = []
 
@@ -81,8 +93,6 @@ def cards_from_csv_upload(file_storage, reversible=False):
             cards.append(make_card(question, answer))
             if reversible:
                 cards.append(make_card(answer, question))
-    except UnicodeDecodeError:
-        return [], "The CSV file must be UTF-8 encoded."
     except csv.Error as error:
         return [], f"Could not read CSV: {error}"
 
@@ -320,9 +330,14 @@ def deck(deck_name):
 
         elif request.form.get("action") == "import_csv":
             reversible = request.form.get("reversible") == "on"
-            cards, import_error = cards_from_csv_upload(
-                request.files.get("csv_file"), reversible=reversible
-            )
+            try:
+                cards, import_error = cards_from_csv_upload(
+                    request.files.get("csv_file"), reversible=reversible
+                )
+            except Exception:
+                current_app.logger.exception("Unexpected CSV import failure.")
+                cards = []
+                import_error = "Could not import CSV. Check the server logs for details."
             if import_error:
                 import_feedback = import_error
                 import_feedback_kind = "error"
