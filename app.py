@@ -139,20 +139,32 @@ def infinite_review():
 
 
 def get_random_card(decks):
-    # Calculate total weight for all cards
-    total_weight = 0
+    eligible_decks = []
     for deck in decks:
-        for card in deck["cards"]:
-            total_weight += deck["importance"] * card["importance"]
+        eligible_cards = [card for card in deck["cards"] if card["importance"] > 0]
+        if deck["importance"] > 0 and eligible_cards:
+            eligible_decks.append((deck, eligible_cards))
 
-    # Select a random card based on weight
-    random_weight = random.uniform(0, total_weight)
-    current_weight = 0
-    for deck in decks:
-        for card in deck["cards"]:
-            current_weight += deck["importance"] * card["importance"]
-            if current_weight >= random_weight:
-                return card
+    total_deck_weight = sum(deck["importance"] for deck, _ in eligible_decks)
+    if total_deck_weight <= 0:
+        return None
+
+    random_deck_weight = random.uniform(0, total_deck_weight)
+    current_deck_weight = 0
+    selected_cards = []
+    for deck, cards in eligible_decks:
+        current_deck_weight += deck["importance"]
+        if current_deck_weight >= random_deck_weight:
+            selected_cards = cards
+            break
+
+    total_card_weight = sum(card["importance"] for card in selected_cards)
+    random_card_weight = random.uniform(0, total_card_weight)
+    current_card_weight = 0
+    for card in selected_cards:
+        current_card_weight += card["importance"]
+        if current_card_weight >= random_card_weight:
+            return card
 
     return None
 
