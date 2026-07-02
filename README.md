@@ -32,6 +32,9 @@ Python 3+ and Flask need to be installed
 ## Languages
 --> Read text and translate words not in list, words of frequency over ...
 
+## Included Decks
+- `test import CSV spanish voc`: Spanish vocabulary imported from CSV, currently 3,164 cards.
+
 ## ChatPDF
 --> can upload pdfs, text files etc... and have summaries, mk flashcards with key questions, extract mental models, ...
 
